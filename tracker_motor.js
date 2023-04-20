@@ -221,7 +221,7 @@ function localMqttConnect(host) {
                 let msg_id = parseInt(msgid, 16);
 
                 if (msg_id === 33) { // MAVLINK_MSG_ID_GLOBAL_POSITION_INT
-                    var time_boot_ms = mavPacket.substring(base_offset, base_offset + 8).toLowerCase()
+                    var time_boot_ms = localmqtt_message.substring(base_offset, base_offset + 8).toLowerCase()
                     base_offset += 8
                     let lat = localmqtt_message.substring(base_offset, base_offset + 8).toLowerCase().toString();
                     base_offset += 8;
@@ -451,86 +451,6 @@ function runMotor() {
         }, 15);
     }, 1000);
 
-    // tilt motor control message
-    // setTimeout(() => {
-    //     setInterval(() => {
-    //         if (tilt_motor_control_message == 'on') {
-    //             EnterMotorMode(TILT_CAN_ID);
-    //             tilt_motormode = 1;
-    //             tilt_motor_control_message = '';
-    //         }
-    //         else if (tilt_motor_control_message == 'off') {
-    //             ExitMotorMode(TILT_CAN_ID);
-    //             tilt_motormode = 0;
-    //             tilt_motor_control_message = '';
-    //             run_flag = '';
-    //         }
-    //         else if (tilt_motor_control_message == 'zero') {
-    //             Zero(TILT_CAN_ID);
-    //             tilt_p_in = 0 + p_offset;
-    //             tilt_motor_control_message = '';
-    //         }
-    //         else if (tilt_motor_control_message == 'init') {
-    //             EnterMotorMode(TILT_CAN_ID);
-    //             tilt_motormode = 1;
-    //             initAction(TILT_CAN_ID);
-    //             tilt_motor_control_message = '';
-    //         }
-
-    //         if (tilt_motormode === 1) {
-    //             if (tilt_motor_control_message == 'tilt_up') {
-    //                 tilt_p_in = tilt_p_in - tilt_p_step;
-    //             }
-    //             else if (tilt_motor_control_message == 'tilt_down') {
-    //                 tilt_p_in = tilt_p_in - tilt_p_step;
-    //             }
-    //             else if (tilt_motor_control_message == 'stop') {
-    //                 tilt_motor_control_message = '';
-    //                 run_flag = '';
-    //             }
-    //             else if (tilt_motor_control_message.includes('go')) {
-    //                 tilt_p_target = (parseInt(tilt_motor_control_message.toString().replace('go', '')) * 0.0174533) + p_offset;
-
-    //                 if (tilt_p_target < tilt_p_in) {
-    //                     tilt_p_in = tilt_p_in - tilt_p_step;
-    //                 }
-    //                 else if (tilt_p_target > tilt_p_in) {
-    //                     tilt_p_in = tilt_p_in + tilt_p_step;
-    //                 }
-    //             }
-    //             else if (tilt_motor_control_message == 'run') {
-    //                 run_flag = 'go';
-    //                 if (tilt_p_target < tilt_p_in) {
-    //                     tilt_p_in = tilt_p_in - tilt_p_step;
-    //                 }
-    //                 else if (tilt_p_target > tilt_p_in) {
-    //                     tilt_p_in = tilt_p_in + tilt_p_step;
-    //                 }
-    //             }
-
-    //             tilt_p_in = constrain(tilt_p_in, P_MIN, P_MAX);
-
-    //             pack_cmd(TILT_CAN_ID, tilt_p_in, tilt_v_in, tilt_kp_in, tilt_kd_in, tilt_t_in);
-
-    //             tilt_no_response_count++;
-
-    //             if (motor_return_msg !== '') {
-    //                 unpack_reply();
-    //                 tilt_no_response_count = 0;
-
-    //                 motor_return_msg = '';
-    //                 console.log('[tilt] -> + ', tilt_p_target, tilt_p_in, tilt_p_out, tilt_v_out, tilt_t_out);
-    //             }
-    //         }
-
-    //         if (tilt_no_response_count > 48) {
-    //             console.log('[tilt] no_response_count', tilt_no_response_count);
-    //             tilt_no_response_count = 0;
-    //             tilt_motormode = 2;
-    //         }
-    //     }, 20);
-    // }, 1000);
-
     setInterval(() => {
         if (pan_motormode === 2) {
             ExitMotorMode(PAN_CAN_ID);
@@ -582,62 +502,31 @@ let constrain = (_in, _min, _max) => {
 let initActionPan = () => {
     setTimeout(() => {
         pan_motor_control_message = 'zero';
-        if (pan_p_out < 0.01) {
+        setTimeout(() => {
+            pan_motor_control_message = 'pan_up';
             setTimeout(() => {
-                pan_motor_control_message = 'pan_up';
+                pan_motor_control_message = 'pan_down';
                 setTimeout(() => {
-                    pan_motor_control_message = 'pan_down';
-                    setTimeout(() => {
-                        pan_motor_control_message = 'stop';
-                    }, 2000);
+                    pan_motor_control_message = 'stop';
                 }, 2000);
-            }, 1000);
-        }
-        else {
-            setTimeout(() => {
-                pan_motor_control_message = 'zero';
-                setTimeout(() => {
-                    pan_motor_control_message = 'pan_up';
-                    setTimeout(() => {
-                        pan_motor_control_message = 'pan_down';
-                        setTimeout(() => {
-                            pan_motor_control_message = 'stop';
-                        }, 2000);
-                    }, 2000);
-                }, 1000);
-            }, 500);
-        }
+            }, 2000);
+        }, 1000);
+
     }, 500);
 }
 
 let initActionTilt = () => {
     setTimeout(() => {
         tilt_motor_control_message = 'zero';
-        if (tilt_p_out < 0.01) {
+        setTimeout(() => {
+            tilt_motor_control_message = 'tilt_up';
             setTimeout(() => {
-                tilt_motor_control_message = 'tilt_up';
+                tilt_motor_control_message = 'tilt_down';
                 setTimeout(() => {
-                    tilt_motor_control_message = 'tilt_down';
-                    setTimeout(() => {
-                        tilt_motor_control_message = 'stop';
-                    }, 2000);
+                    tilt_motor_control_message = 'stop';
                 }, 2000);
-            }, 1000);
-        }
-        else {
-            setTimeout(() => {
-                tilt_motor_control_message = 'zero';
-                setTimeout(() => {
-                    tilt_motor_control_message = 'tilt_up';
-                    setTimeout(() => {
-                        tilt_motor_control_message = 'tilt_down';
-                        setTimeout(() => {
-                            tilt_motor_control_message = 'stop';
-                        }, 2000);
-                    }, 2000);
-                }, 1000);
-            }, 500);
-        }
+            }, 2000);
+        }, 1000);
     }, 500);
 }
 
