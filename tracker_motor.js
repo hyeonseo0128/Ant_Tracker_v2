@@ -604,6 +604,9 @@ let unpack_reply = () => {
 //--------------- CAN special message ---------------
 function EnterMotorMode(CAN_ID) {
     can_port.write(Buffer.from(CAN_ID + 'FFFFFFFFFFFFFFFC', 'hex'));
+    setTimeout(() => {
+        can_port.write(Buffer.from(CAN_ID + 'FFFFFFFFFFFFFFFE', 'hex'));
+    }, 3);
 }
 
 function ExitMotorMode(CAN_ID) {
