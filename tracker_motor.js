@@ -151,8 +151,13 @@ function canPortError(error) {
 }
 
 function canPortData(data) {
-    motor_return_msg = data.toString('hex').toLowerCase();
-    // console.log('motor_return_msg: ', motor_return_msg);
+    let _msg = data.toString('hex').toLowerCase();
+    if (_msg.length >= 24) {
+        if (_msg.substring(0, 10) === '0000000001' || _msg.substring(0, 10) === '0000000002') {
+            motor_return_msg = _msg;
+            console.log('motor_return_msg: ', motor_return_msg);
+        }
+    }
 }
 
 canPortOpening();
