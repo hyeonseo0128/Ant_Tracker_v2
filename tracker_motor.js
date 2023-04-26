@@ -2,6 +2,23 @@ const mqtt = require('mqtt');
 const { nanoid } = require("nanoid");
 const { SerialPort } = require('serialport');
 
+let drone_info = {};
+try {
+    drone_info = JSON.parse(fs.readFileSync('../drone_info.json', 'utf8'));
+} catch (e) {
+    console.log('can not find [ ../drone_info.json ] file');
+    drone_info.host = "gcs.iotocean.org"
+    drone_info.drone = "Flight_2"
+    drone_info.gcs = "KETI_MUV"
+    drone_info.type = "ardupilot"
+    drone_info.system_id = 1
+    drone_info.update = "disable"
+    drone_info.mission = {}
+    drone_info.id = ae_name.flight
+
+    fs.writeFileSync('../drone_info.json', JSON.stringify(drone_info, null, 4), 'utf8');
+}
+
 // ---------- set values ---------- 
 const PAN_CAN_ID = '000000010000';
 const TILT_CAN_ID = '000000020000';
@@ -82,7 +99,7 @@ let target_relative_altitude = '';
 let motor_return_msg = '';
 let gps_update_msg = '';
 
-let sub_drone_data_topic = '/RF/TELE_HUB/drone';
+let sub_drone_data_topic = '/gcs/TELE_HUB/drone/rf/' + drone_info.drone;
 let sub_gps_location_topic = '/GPS/location';
 let sub_gps_update_topic = '/GPS/update';
 let sub_motor_control_topic = '/Ant_Tracker/Control';
