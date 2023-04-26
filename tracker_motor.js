@@ -308,10 +308,15 @@ function runMotor() {
                     pan_motor_control_message = '';
                 }
                 else if (pan_motor_control_message == 'init') {
-                    EnterMotorMode(PAN_CAN_ID);
-                    pan_motormode = 1;
-                    initActionPan(PAN_CAN_ID);
-                    pan_motor_control_message = '';
+                    if (pan_motormode !== 1) {
+                        EnterMotorMode(PAN_CAN_ID);
+                        pan_motormode = 1;
+                        initActionPan(PAN_CAN_ID);
+                        pan_motor_control_message = '';
+                    } else {
+                        initActionPan(PAN_CAN_ID);
+                        pan_motor_control_message = '';
+                    }
                 }
 
                 if (pan_motormode === 1) {
@@ -386,10 +391,15 @@ function runMotor() {
                     tilt_motor_control_message = '';
                 }
                 else if (tilt_motor_control_message == 'init') {
-                    EnterMotorMode(TILT_CAN_ID);
-                    tilt_motormode = 1;
-                    initActionTilt(TILT_CAN_ID);
-                    tilt_motor_control_message = '';
+                    if (tilt_motormode !== 1) {
+                        EnterMotorMode(TILT_CAN_ID);
+                        tilt_motormode = 1;
+                        initActionTilt(TILT_CAN_ID);
+                        tilt_motor_control_message = '';
+                    } else {
+                        initActionTilt(TILT_CAN_ID);
+                        tilt_motor_control_message = '';
+                    }
                 }
 
                 if (tilt_motormode === 1) {
