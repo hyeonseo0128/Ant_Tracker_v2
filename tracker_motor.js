@@ -109,7 +109,7 @@ let pub_tilt_motor_position_topic = '/Ant_Tracker/Motor_Tilt';
 
 let switchCount = 0;
 
-let sitl_state = true;
+let sitl_state = false;
 let sitl_mqtt_host = 'gcs.iotocean.org';
 let sitlmqtt = '';
 
