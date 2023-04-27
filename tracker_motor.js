@@ -300,15 +300,6 @@ function runMotor() {
         tilt_motor_control_message = 'init';
     }, 3000);
 
-    setInterval(() => {
-        localmqtt.publish(pub_pan_motor_position_topic, (pan_p_out * 180 / Math.PI).toString(), () => {
-            // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
-        });
-        localmqtt.publish(pub_tilt_motor_position_topic, (tilt_p_out * 180 / Math.PI).toString(), () => {
-            // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
-        });
-    }, 500);
-
     // pan motor control message
     setTimeout(() => {
         setInterval(() => {
@@ -386,6 +377,19 @@ function runMotor() {
                         motor_return_msg = '';
                         console.log('[pan] -> ', pan_p_target, pan_p_in, pan_p_out, pan_v_out, pan_t_out);
                     }
+                } else if (pan_motormode === 2) {
+                    ExitMotorMode(PAN_CAN_ID);
+
+                    setTimeout(() => {
+                        if (motor_return_msg !== '') {
+                            unpack_reply();
+
+                            motor_return_msg = '';
+                            pan_p_in = pan_p_out + p_offset;
+
+                            console.log('[pan] ExitMotorMode', pan_p_in, pan_p_out, pan_v_out, pan_t_out);
+                        }
+                    }, 500)
                 }
 
                 if (pan_no_response_count > 48) {
@@ -393,6 +397,10 @@ function runMotor() {
                     pan_no_response_count = 0;
                     pan_motormode = 2;
                 }
+                
+                localmqtt.publish(pub_pan_motor_position_topic, (pan_p_out * 180 / Math.PI).toString(), () => {
+                    // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
+                });
             }
 
             let tiltControl = () => {
@@ -468,6 +476,19 @@ function runMotor() {
                         motor_return_msg = '';
                         console.log('[tilt] -> ', tilt_p_target, tilt_p_in, tilt_p_out, tilt_v_out, tilt_t_out);
                     }
+                } else if (tilt_motormode === 2) {
+                    ExitMotorMode(TILT_CAN_ID);
+
+                    setTimeout(() => {
+                        if (motor_return_msg !== '') {
+                            unpack_reply();
+
+                            motor_return_msg = '';
+                            tilt_p_in = tilt_p_out + p_offset;
+
+                            console.log('[tilt] ExitMotorMode', tilt_p_in, tilt_p_out, tilt_v_out, tilt_t_out);
+                        }
+                    }, 500)
                 }
 
                 if (tilt_no_response_count > 48) {
@@ -475,6 +496,10 @@ function runMotor() {
                     tilt_no_response_count = 0;
                     tilt_motormode = 2;
                 }
+                
+                localmqtt.publish(pub_tilt_motor_position_topic, (tilt_p_out * 180 / Math.PI).toString(), () => {
+                    // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
+                });
             }
 
             let turn = switchCount++ % 2;
@@ -487,41 +512,6 @@ function runMotor() {
             }
         }, 15);
     }, 1000);
-
-    setInterval(() => {
-        if (pan_motormode === 2) {
-            ExitMotorMode(PAN_CAN_ID);
-
-            setTimeout(() => {
-                if (motor_return_msg !== '') {
-                    unpack_reply();
-
-                    motor_return_msg = '';
-                    pan_p_in = pan_p_out + p_offset;
-
-                    console.log('[pan] ExitMotorMode', pan_p_in, pan_p_out, pan_v_out, pan_t_out);
-                }
-            }, 500)
-        }
-    }, 1000);
-
-    setInterval(() => {
-        if (tilt_motormode === 2) {
-            ExitMotorMode(TILT_CAN_ID);
-
-            setTimeout(() => {
-                if (motor_return_msg !== '') {
-                    unpack_reply();
-
-                    motor_return_msg = '';
-                    tilt_p_in = tilt_p_out + p_offset;
-
-                    console.log('[tilt] ExitMotorMode', tilt_p_in, tilt_p_out, tilt_v_out, tilt_t_out);
-                }
-            }, 500)
-        }
-    }, 1000);
-
 }
 
 let constrain = (_in, _min, _max) => {
