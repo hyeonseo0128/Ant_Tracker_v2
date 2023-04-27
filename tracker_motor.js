@@ -380,16 +380,14 @@ function runMotor() {
                 } else if (pan_motormode === 2) {
                     ExitMotorMode(PAN_CAN_ID);
 
-                    setTimeout(() => {
-                        if (motor_return_msg !== '') {
-                            unpack_reply();
+                    if (motor_return_msg !== '') {
+                        unpack_reply();
 
-                            motor_return_msg = '';
-                            pan_p_in = pan_p_out + p_offset;
+                        motor_return_msg = '';
+                        pan_p_in = pan_p_out + p_offset;
 
-                            console.log('[pan] ExitMotorMode', pan_p_in, pan_p_out, pan_v_out, pan_t_out);
-                        }
-                    }, 500)
+                        console.log('[pan] ExitMotorMode', pan_p_in, pan_p_out, pan_v_out, pan_t_out);
+                    }
                 }
 
                 if (pan_no_response_count > 48) {
@@ -479,16 +477,14 @@ function runMotor() {
                 } else if (tilt_motormode === 2) {
                     ExitMotorMode(TILT_CAN_ID);
 
-                    setTimeout(() => {
-                        if (motor_return_msg !== '') {
-                            unpack_reply();
+                    if (motor_return_msg !== '') {
+                        unpack_reply();
 
-                            motor_return_msg = '';
-                            tilt_p_in = tilt_p_out + p_offset;
+                        motor_return_msg = '';
+                        tilt_p_in = tilt_p_out + p_offset;
 
-                            console.log('[tilt] ExitMotorMode', tilt_p_in, tilt_p_out, tilt_v_out, tilt_t_out);
-                        }
-                    }, 500)
+                        console.log('[tilt] ExitMotorMode', tilt_p_in, tilt_p_out, tilt_v_out, tilt_t_out);
+                    }
                 }
 
                 if (tilt_no_response_count > 48) {
