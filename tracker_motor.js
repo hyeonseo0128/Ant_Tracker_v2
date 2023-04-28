@@ -397,9 +397,12 @@ function runMotor() {
                     pan_motormode = 2;
                 }
                 
-                localmqtt.publish(pub_pan_motor_position_topic, (pan_p_out * 180 / Math.PI).toString(), () => {
-                    // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
-                });
+                try {
+                    localmqtt.publish(pub_pan_motor_position_topic, (pan_p_out * 180 / Math.PI).toString(), () => {
+                        // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
+                    });
+                } catch {
+                }
             }
 
             let tiltControl = () => {
@@ -494,9 +497,12 @@ function runMotor() {
                     tilt_motormode = 2;
                 }
                 
-                localmqtt.publish(pub_tilt_motor_position_topic, (tilt_p_out * 180 / Math.PI).toString(), () => {
-                    // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
-                });
+                try {
+                    localmqtt.publish(pub_tilt_motor_position_topic, (tilt_p_out * 180 / Math.PI).toString(), () => {
+                        // console.log('[pan] send Motor angle to GCS value: ', p_out * 180 / Math.PI)
+                    });
+                } catch {
+                }
             }
 
             let turn = switchCount++ % 2;
@@ -506,6 +512,10 @@ function runMotor() {
             }
             else {
                 panControl();
+            }
+            
+            if (switchCount > 1) {
+                switchCount = 0;
             }
         }, 15);
     }, 1000);
