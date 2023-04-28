@@ -1,4 +1,5 @@
 const mqtt = require('mqtt');
+const fs = require('fs');
 const { nanoid } = require("nanoid");
 const { SerialPort } = require('serialport');
 
@@ -223,7 +224,7 @@ function localMqttConnect(host) {
             pan_motor_control_message = message.toString();
             tilt_motor_control_message = message.toString();
             // console.log(topic, motor_control_message);
-        } else if (topic === sub_drone_data_topic || topic === sub_gps_location_topic) {
+        } else if (topic.includes(sub_drone_data_topic) || topic === sub_gps_location_topic) {
             localmqtt_message = message.toString('hex');
             // console.log("Client1 topic => " + topic);
             // console.log("Client1 message => " + drone_message);
